@@ -1,12 +1,17 @@
+## Sheikh Salim 1003367
+## FCS Lab 3
+## Time taken : 28.535s. Please refer to the writeup for WriteUp.md for more details for parts 3 & 5
+
 import hashlib
 import string
 import random
 import os
 import time
-
+import csv
 
 def hash_it(message):
     return hashlib.md5(message.encode()).hexdigest()
+
 
 def randomiser(choices, targets):
     cracked= []
@@ -29,6 +34,8 @@ def randomiser(choices, targets):
     return cracked, relevant_hash
 
 
+
+
 def salt_and_hash(list_of_messages):
     try:
         os.remove('hash5_salted.txt')
@@ -48,6 +55,7 @@ def salt_and_hash(list_of_messages):
             f2.write('\n')
 
 if __name__ == "__main__":
+
     with open('hash5.txt', 'r') as f:
         targets = set([line.strip() for line in f])
 
@@ -59,7 +67,11 @@ if __name__ == "__main__":
     print('Time taken: {}'.format(end_time-start_time))
     #### End of segmenmt for Part 3
 
-    ### This segment of the code deals with Part 5
-    list_of_cracked = ['aseas', 'cance', 'di5gv', 'dsmto', 'egunb', 'hed4e', 'lou0g', 'mlhdi', 'nized', 'ofror', 'opmen', 'owso9', 'sso55', 'tpoin', 'tthel']
-    salt_and_hash(list_of_cracked)
-    #### End of segmenmt for Part 5
+    # ### This segment of the code deals with Part 5
+    # list_of_cracked = ['aseas', 'cance', 'di5gv', 'dsmto', 'egunb', 'hed4e', 'lou0g', 'mlhdi', 'nized', 'ofror', 'opmen', 'owso9', 'sso55', 'tpoin', 'tthel']
+    # salt_and_hash(list_of_cracked)
+    # #### End of segmenmt for Part 5
+    # #
+    # # ### Additonal Formatting for Challenge
+    # # save_and_format('output.csv', 'outputv1.csv', 'cracked_lmao.txt')
+
