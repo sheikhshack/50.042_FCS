@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Sheikh Salim 1003367
+# Foundations of Cybersecurity
 # ECB wrapper skeleton file for 50.042 FCS
 
 from present import *
@@ -12,7 +14,7 @@ blocksize_bytes = 8 # use bytes as python can only read whole bytes at a time, s
 
 def encrypt_blocks(plain_block, key):
     if len(plain_block) < blocksize_bytes:
-        print('Padding generated, using PKCS7')
+        print('Padding generating')
         bytes_append = blocksize_bytes - len(plain_block)
         plain_block += bytes(bytes_append for i in range(bytes_append))
     # Big endian format, MSB at begining
@@ -44,14 +46,13 @@ def remove_padding_v2(block):
     print('block is ', hex(block))
     pad = block & 0xff
     print('Testing pad with value ', pad)
-    # print('pad value given by', hex(int.from_bytes(pad, byteorder='big')))
     if pad > 0x10:
         print('No padding detected, exiting now')
         return block, 8
     for i in range(pad):
+        # runs across to make sure that it is indded a padding
         temp_block = (block >> 8 * i) & 0xff
         if temp_block != pad:
-            print('Oh fuck, guess it was coincidence')
             return block, 8
     block = block >> 8 * pad
     return block, 8-pad
@@ -94,26 +95,27 @@ def ecb(infile,outfile,key,mode):
 
 
 
-
-
-
 if __name__=="__main__":
-    # parser=argparse.ArgumentParser(description='Block cipher using ECB mode.')
-    # parser.add_argument('-i', dest='infile',help='input file')
-    # parser.add_argument('-o', dest='outfile',help='output file')
-    # parser.add_argument('-k', dest='keyfile',help='key file')
-    # parser.add_argument('-m', dest='mode',help='mode')
-    #
-    # args=parser.parse_args()
-    # infile=args.infile
-    # outfile=args.outfile
-    # keyfile=args.keyfile
-    ecb('Tux.ppm', 'Tuxenc.ppm', 0xdeadbeefdeadbeef, 1)
+    parser=argparse.ArgumentParser(description='Block cipher using ECB mode.')
+    parser.add_argument('-i', dest='infile',help='input file', required=True)
+    parser.add_argument('-o', dest='outfile',help='output file', required=True)
+    parser.add_argument('-k', dest='keyfile',help='key file', required=True)
+    parser.add_argument('-m', dest='mode',help='mode', choices={"D", "d", "e", "E"}, default="E")
 
-    ecb('Tuxenc.ppm', 'Tuxdec.ppm', 0xdeadbeefdeadbeef, 0)
-    # ecb_testdecrypt(0xdeadbeefdeadbeef)
+    args=parser.parse_args()
+    infile=args.infile
+    outfile=args.outfile
+    keyfile=args.keyfile
+    mode=args.mode
 
-    # ecb_test(0xdeadbeefdeadbeef)
+    print('Using key ', int(keyfile))
+
+    if mode.upper() == 'E':
+        ecb(infile, outfile, int(keyfile), 1)
+    else:
+        ecb(infile, outfile, int(keyfile), 0)
+
+
 
 
 

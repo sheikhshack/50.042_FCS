@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Sheikh Salim 1003367
+# Foundations of Cybersecurity
 # ECB plaintext extraction skeleton file for 50.042 FCS
 
 import argparse
@@ -7,7 +9,7 @@ import argparse
 def getInfo(headerfile):
     with open(headerfile, 'rb') as header:
         content = header.read()
-        print('Header given by ', content, ' with length ', len(content))
+        # print('Header given by ', content, ' with length ', len(content))
     return content
 
 
@@ -31,7 +33,7 @@ def extract(infile, outfile, headerfile):
     with open(infile, 'rb') as source, open(outfile, 'wb') as dest:
         # moves filepointer ahead to skip header + the trailing bytes in the block (15 +1 = 16 full block)
         blocks_to_skip = int(len(decrypted_header) / 8) + 1  # in this case its 2 blocks = 16 bytes
-        print(source.read(blocks_to_skip * 8))
+        source.read(blocks_to_skip * 8)
         padder = 8 - len(decrypted_header) % 8
         dest.write((decrypted_header.decode() + padder * '\n').encode())
         while True:
@@ -49,21 +51,20 @@ def extract(infile, outfile, headerfile):
 
 
 if __name__ == "__main__":
-    # parser=argparse.ArgumentParser(description='Extract PBM pattern.')
-    # parser.add_argument('-i', dest='infile',help='input file, PBM encrypted format')
-    # parser.add_argument('-o', dest='outfile',help='output PBM file')
-    # parser.add_argument('-hh', dest='headerfile',help='known header file')
-    #
-    # args=parser.parse_args()
-    # infile=args.infile
-    # outfile=args.outfile
-    # headerfile=args.headerfile
-    #
-    # print('Reading from: %s'%infile)
-    # print('Reading header file from: %s'%headerfile)
-    # print('Writing to: %s'%outfile)
-    #
-    # success=extract(infile,outfile,headerfile)
-    getInfo('header.pbm')
-    extract('letter.e', 'final.pbm', 'header.pbm')
+    parser=argparse.ArgumentParser(description='Extract PBM pattern.')
+    parser.add_argument('-i', dest='infile',help='input file, PBM encrypted format')
+    parser.add_argument('-o', dest='outfile',help='output PBM file')
+    parser.add_argument('-hh', dest='headerfile',help='known header file')
+
+    args=parser.parse_args()
+    infile=args.infile
+    outfile=args.outfile
+    headerfile=args.headerfile
+
+    print('Reading from: %s'%infile)
+    print('Reading header file from: %s'%headerfile)
+    print('Writing to: %s'%outfile)
+
+    success=extract(infile,outfile,headerfile)
+
 
