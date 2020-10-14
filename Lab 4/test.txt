@@ -1,0 +1,1 @@
+A load word or store word instruction uses onlyerg one memory address. The lowest address of the four bytes is used for the address of a block of four contiguous bytes.
