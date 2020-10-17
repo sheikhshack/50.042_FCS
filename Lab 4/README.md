@@ -33,7 +33,7 @@ To check the integrity of the encryption and make sure that our padding is worki
 Result: **No difference**
 ![](https://i.imgur.com/h9wQj7T.png)
 
-Just to be sure, here are the (last few lines) hexdumps of the encrypted and decrypted
+Just to be sure, here are the (last few lines) hexdumps of the original and decrypted
 
 
 **Original**: `hexdump Tex.ppm`
@@ -71,9 +71,9 @@ Very quickly, even at a glance, we can see the common 8-byte `0x7aa10bff92fd4179
 
 After a quick and simple replacement for all `0x7aa10bff92fd4179` to `00000000`, and the rest of the bytes to `11111111` we should get some idea of the original
 
-Now the task is to make this code more dynamic, and let the program analyse it instead of having to work with hexdumps. To make this work
+Now the task is to make this more dynamic using `extract.py`, and let the program analyse it instead of having to work with hexdumps. To make this work
 1. Run through the entire `infile` and count the byte frequency using a dict
-2. Run through a second time to start writing out the most common byte to be equal to black value
+2. Run through a second time to start writing out the most common byte to be equal to black value (`00000000`), the rest being white (`11111111`)
 3. Profit
 ![](https://i.imgur.com/cky555P.png)
 
