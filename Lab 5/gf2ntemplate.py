@@ -56,6 +56,9 @@ class Polynomial2:
 
         if modp:
             modp_array = copy.deepcopy(modp.coeffs)
+            length_difference = len(modp_array) - len(multiplier)
+            multiplier.extend([0] * (length_difference -1 ))
+            print('Extension brought us to ', multiplier)
             partial_results = []
 
             for i in range(num_of_iters + 1):
@@ -68,8 +71,9 @@ class Polynomial2:
                     multiplier.pop()
 
                 elif multiplier[-1] == 0:
+                    # shift the result one bit to the right...
                     multiplier.insert(0, 0)
-                    multiplier.pop()
+                    multiplier.pop() #TODO: I commented it out
 
                 elif multiplier[-1] == 1:
                     # shift one bit to the right
@@ -83,6 +87,7 @@ class Polynomial2:
                     partial_XOR.pop()
                     multiplier = partial_XOR
                 # print('Iteration ', i, ' gives value of ', multiplier)
+                print(multiplier)
                 if source[i] == 1:
                     partial_results.append(copy.deepcopy(multiplier))
         else:
@@ -100,6 +105,7 @@ class Polynomial2:
 
 
         finalResult = []
+        print('Partial results', partial_results)
         for aligned_bits in zip(*partial_results):
             res = 0
             for bits in aligned_bits:
@@ -207,6 +213,9 @@ class Polynomial2:
 
     def div(self, p2):
         # Code is verbatim from the handout
+        # I had previously did the longdiv without looking at the handout's wikipedia page proper. Code for old longdiv
+        # is commented at the top under mul function. Its the same thing actually
+
         q = Polynomial2([])
         r = Polynomial2(copy.deepcopy(self.coeffs))
         d = p2.deg()
@@ -227,9 +236,13 @@ class Polynomial2:
     def __str__(self):
         coefficients = self.coeffs
         coeff_len = len(coefficients)
+        last_one = coefficients.index(1)
         coeff_string = ''
         for i in range(coeff_len):
-            if coefficients[coeff_len - i - 1] == 1 and i != coeff_len-1:
+            if coefficients[coeff_len - i - 1] == 1 and i != coeff_len-1 and coeff_len - i - 1 == last_one:
+                coeff_string += 'x^' + str(coeff_len - i - 1)
+
+            elif coefficients[coeff_len - i - 1] == 1 and i != coeff_len-1:
                 coeff_string += 'x^' + str(coeff_len - i - 1) + '+'
             elif coefficients[coeff_len - i - 1] == 1 and i == coeff_len-1:
                 coeff_string += 'x^' + str(coeff_len - i - 1)
@@ -259,43 +272,103 @@ class GF2N:
                [0,0,0,1,1,1,1,1]]
 
     def __init__(self,x,n=8,ip=Polynomial2([1,1,0,1,1,0,0,0,1])):
-        pass
+        # need to convert the integer to list first
+        self.x = x
+        self.n = n
+        self.ip = ip
+        self.p = self.getPolynomial2()
+
 
 
     def add(self,g2):
-        pass
+        # Add is straightforward
+        copy_array = copy.deepcopy(self.p.coeffs)
+        copy_poly = Polynomial2(copy_array)
+
+        # adds the polynomials
+        res_poly = copy_poly.add(g2.p)
+        # gets the integer
+        x = res_poly.getInt()
+        # get the highest power + 1
+        n = res_poly.deg() + 1
+        final = GF2N(x, n, self.ip)
+        return final
+
+
+
+
+
     def sub(self,g2):
-        pass
+        # same same
+        return self.add(self, g2)
     
     def mul(self,g2):
-        pass
+        # Mul is straightforward
+        copy_array = copy.deepcopy(self.p.coeffs)
+        copy_poly = Polynomial2(copy_array)
+        print('SELF IP', self.ip)
+        print('G2 IP', g2.ip)
+
+
+        # adds the polynomials
+        res_poly = copy_poly.mul(g2.p, self.ip)
+        # gets the integer
+        x = res_poly.getInt()
+        # get the highest power + 1
+        n = res_poly.deg() + 1
+        final = GF2N(x, n, self.ip)
+        return final
 
     def div(self,g2):
-        pass
+        # Div is straightforward
+        copy_array = copy.deepcopy(self.p.coeffs)
+        copy_poly = Polynomial2(copy_array)
+
+        # adds the polynomials
+        quotient, remainder = copy_poly.div(g2.p)
+
+        # gets the integer
+        x_r = remainder.getInt()
+        x_q = quotient.getInt()
+
+        # get the highest power + 1
+        n_r = remainder.deg() + 1
+        n_q = quotient.deg() + 1
+
+        final_remainder = GF2N(x_r, n_r, self.ip)
+        final_quotient = GF2N(x_q, n_q, self.ip)
+
+        return final_quotient, final_remainder
 
     def getPolynomial2(self):
-        pass
+        x = self.x
+        coeffs = [1 if bit == '1' else 0 for bit in bin(x)[2:]]
+        coeffs.reverse()
+        return Polynomial2(coeffs)
 
     def __str__(self):
-        pass
+        return str(self.x)
 
     def getInt(self):
-        pass
+        return self.x
 
     def mulInv(self):
-        pass
+        # for this segment, I did EEA as discussed in classs and use that to understand the wiki EEA
 
     def affineMap(self):
         pass
+
+    # def ipComparator(self, otherIP):
+    #     if len(self.ip.coeffs) < len(self.ip.)
 
 
 ############### My tests ###################3
 
 
-# print('Multiply Test')
-# p1 = Polynomial2([0,1,1,0,0,1])
-# p2 = Polynomial2([1,0,1,0,1,1])
-# print(p2.mul(p1).coeffs)
+print('Multiply Test')
+p1 = Polynomial2([0,1,1,0,0,1])
+p2 = Polynomial2([1,0,1,0,1,1])
+print(p2.mul(p1).coeffs)
 
 print('\nTest 1')
 print('======')
@@ -326,37 +399,37 @@ p8q,p8r=p6.div(p7)
 print('q for p6/p7=', p8q)
 print('r for p6/p7=', p8r)
 
-# ####
-# print('\nTest 4')
-# print('======')
-# g1=GF2N(100)
-# g2=GF2N(5)
-# print('g1 = ', g1.getPolynomial2())
-# print('g2 = ', g2.getPolynomial2())
-# g3=g1.add(g2)
-# print('g1+g2 = ', g3)
-#
-# print('\nTest 5')
-# print('======')
-# ip=Polynomial2([1,1,0,0,1])
-# print('irreducible polynomial', ip)
-# g4=GF2N(0b1101,4,ip)
-# g5=GF2N(0b110,4,ip)
-# print('g4 = ', g4.getPolynomial2())
-# print('g5 = ', g5.getPolynomial2())
-# g6=g4.mul(g5)
-# print('g4 x g5 = ', g6.p)
-#
-# print('\nTest 6')
-# print('======')
-# g7=GF2N(0b1000010000100,13,None)
-# g8=GF2N(0b100011011,13,None)
-# print('g7 = ', g7.getPolynomial2())
-# print('g8 = ', g8.getPolynomial2())
-# q,r=g7.div(g8)
-# print('g7/g8 =')
-# print('q = ', q.getPolynomial2())
-# print('r = ', r.getPolynomial2())
+####
+print('\nTest 4')
+print('======')
+g1=GF2N(100)
+g2=GF2N(5)
+print('g1 = ', g1.getPolynomial2())
+print('g2 = ', g2.getPolynomial2())
+g3=g1.add(g2)
+print('g1+g2 = ', g3)
+
+print('\nTest 5')
+print('======')
+ip=Polynomial2([1,1,0,0,1])
+print('irreducible polynomial', ip)
+g4=GF2N(0b1101,4,ip)
+g5=GF2N(0b110,4,ip)
+print('g4 = ', g4.getPolynomial2())
+print('g5 = ', g5.getPolynomial2())
+g6=g4.mul(g5)
+print('g4 x g5 = ', g6.p)
+
+print('\nTest 6')
+print('======')
+g7=GF2N(0b1000010000100,13,None)
+g8=GF2N(0b100011011,13,None)
+print('g7 = ', g7.getPolynomial2())
+print('g8 = ', g8.getPolynomial2())
+q,r=g7.div(g8)
+print('g7/g8 =')
+print('q = ', q.getPolynomial2())
+print('r = ', r.getPolynomial2())
 #
 # print('\nTest 7')
 # print('======')
