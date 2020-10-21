@@ -1,3 +1,4 @@
+# Sheikh Salim 1003367
 # 50.042 FCS Lab 5 Modular Arithmetics
 # Year 2020
 
@@ -56,7 +57,7 @@ class Polynomial2:
         if modp:
             modp_array = copy.deepcopy(modp.coeffs)
             length_difference = len(modp_array) - len(multiplier)
-            multiplier.extend([0] * (length_difference -1 ))
+            multiplier.extend([0] * (length_difference -1))
             partial_results = []
 
             for i in range(num_of_iters + 1):
@@ -71,7 +72,7 @@ class Polynomial2:
                 elif multiplier[-1] == 0:
                     # shift the result one bit to the right...
                     multiplier.insert(0, 0)
-                    multiplier.pop() #TODO: I commented it out
+                    multiplier.pop()
 
                 elif multiplier[-1] == 1:
                     # shift one bit to the right
@@ -111,88 +112,8 @@ class Polynomial2:
 
 
 
-
-
-    # def mul_out(self, p2, modp=None):
-    #     # first step is to reverse so that we can basically do what prof teach
-    #     multiplier = copy.deepcopy(p2.coeffs)
-    #     source = copy.deepcopy(self.coeffs)
-    #     source.reverse()
-    #
-    #     print('I am multiplying {0} and {1}'.format(source, multiplier))
-    #
-    #     # we need to do bitwise AND, followed by reduction due to beyond field status
-    #     combined_and = []
-    #     for i in range(len(multiplier)):
-    #         # since ANDing with 0 yield nothing, we skip and go on to next iter
-    #         if multiplier[i] == 0:
-    #             continue
-    #         positional_array = []
-    #         # adds the padding first
-    #         for leftpad in range(len(multiplier) - i -1):
-    #             # print('trigger left pad, value of i is {0} and value of len(multiplier) is {1}'.format(i, len(multiplier)))
-    #             positional_array.append(0)
-    #         # does the xor-ing TODO: make this just copy the whole damn array rather than XOR specific
-    #         for j in source:
-    #             positional_array.append(j & multiplier[i])
-    #         # adds the right padding
-    #         for rightpad in range(i):
-    #             positional_array.append(0)
-    #         print('positional_array given by {0}'.format(positional_array))
-    #         combined_and.append(positional_array)
-    #
-    #     # proceed to XOR them
-    #     final_XOR = []
-    #     for aligned_bits in zip(*combined_and):
-    #         res = 0
-    #         for bits in aligned_bits:
-    #             res = bits ^ res
-    #         final_XOR.append(res)
-    #     print(final_XOR)
-    #     if not modp:
-    #         final_XOR.reverse()
-    #         return Polynomial2(final_XOR)
-    #     else:
-    #         # for the case of modp
-    #         modp_copy = copy.deepcopy(modp.coeffs)
-    #         modp_copy.reverse()
-    #         mod_p_len = len(modp_copy)
-    #         number_of_iters = len(final_XOR) - mod_p_len + 1
-    #         res = final_XOR[0:mod_p_len]
-    #         print('init res has value: ', res)
-    #
-    #
-    #         for i in range(number_of_iters):
-    #             # In the case where the value of first bit = 0
-    #             print('Iteration ', i)
-    #             if res[0] == 0:
-    #                 if mod_p_len + i >= len(final_XOR):
-    #                     # in the scenario that there is a trailing zero and the damn thing wont stop seeking rotation
-    #                     break
-    #                 # we rotate Left
-    #                 res.pop(0)
-    #                 print('First equals zero detected, moving by 1 to  ', res, 'at iter', i , 'out of ', number_of_iters)
-    #                 res.append(final_XOR[mod_p_len + i])
-    #
-    #                 continue
-    #
-    #             # Step 1: Do the XOR
-    #             partial_XOR = []
-    #             for v_i, d_i in zip(res, modp_copy):
-    #                 partial_XOR.append(v_i ^ d_i)
-    #             # Step 2: remove the first element, then proceed to add on to the next elem
-    #             if mod_p_len + i < len(final_XOR) - 1:
-    #                 partial_XOR.append(final_XOR[mod_p_len + i])
-    #                 MSB = partial_XOR.pop(0)
-    #
-    #             res = partial_XOR
-    #             print('Iteration {0} has partial of {1}'.format(i, res))
-    #         res.reverse()
-    #         Polynomial2(res)
-
     def deg(self):
         coefficients = copy.deepcopy(self.coeffs)
-        #TODO: added this for aes
         if len(coefficients) == 0:
             return 0
         index = len(coefficients) - 1
@@ -237,9 +158,6 @@ class Polynomial2:
             s = Polynomial2(temp_array)
             q = s.add(q)
             r = r.sub(s.mul(p2))
-
-
-
 
         return q, r
 
@@ -347,6 +265,8 @@ class GF2N:
 
     def getPolynomial2(self):
         x = self.x
+        if x == 0:
+            return Polynomial2([0])
         coeffs = [1 if bit == '1' else 0 for bit in bin(x)[2:]]
         coeffs.reverse()
         return Polynomial2(coeffs)
@@ -375,12 +295,15 @@ class GF2N:
             t2 = t
         if r1.getInt() == 1:
             return GF2N(t1.getInt(), self.n, self.ip)
+        # this case for table generation
+        if self.x == 0:
+            return GF2N(0, self.n, self.ip)
 
 
     def affineMap(self):
         # first step is get array of b_primes
         rhs = [1,1,0,0,0,1,1,0]
-        b_prime = self.mulInv().getPolynomial2().coeffs
+        b_prime = self.mulInv().getPolynomial2().coeffs #TODO: Await prof reply
         result = []
         index = 0
         for bit_array in self.affinemat:
@@ -399,84 +322,67 @@ class GF2N:
 
 
 
-############### My tests ###################3
+print('\nTest 1')
+print('======')
+print('p1=x^5+x^2+x')
+print('p2=x^3+x^2+1')
+p1=Polynomial2([0,1,1,0,0,1])
+p2=Polynomial2([1,0,1,1])
+p3=p1.add(p2)
+print('p3= p1+p2 = ', p3)
 
-
-# Dive test
-print('Div Test')
-p6=Polynomial2([0,1])
-p7=Polynomial2([1])
+print('\nTest 2')
+print('======')
+print('p4=x^7+x^4+x^3+x^2+x')
+print('modp=x^8+x^7+x^5+x^4+1')
+p4=Polynomial2([0,1,1,1,1,0,0,1])
+# modp=Polynomial2([1,1,0,1,1,0,0,0,1])
+modp=Polynomial2([1,0,0,0,1,1,0,1,1])
+p5=p1.mul(p4,modp)
+print('p5=p1*p4 mod (modp)=', p5)
+#
+print('\nTest 3')
+print('======')
+print('p6=x^12+x^7+x^2')
+print('p7=x^8+x^4+x^3+x+1')
+p6=Polynomial2([0,0,1,0,0,0,0,1,0,0,0,0,1])
+p7=Polynomial2([1,1,0,1,1,0,0,0,1])
 p8q,p8r=p6.div(p7)
-print(p8q)
-print(p8r)
+print('q for p6/p7=', p8q)
+print('r for p6/p7=', p8r)
 
+####
+print('\nTest 4')
+print('======')
+g1=GF2N(100)
+g2=GF2N(5)
+print('g1 = ', g1.getPolynomial2())
+print('g2 = ', g2.getPolynomial2())
+g3=g1.add(g2)
+print('g1+g2 = ', g3)
 
-# print('Multiply Test')
-# p1 = Polynomial2([0,1,1,0,0,1])
-# p2 = Polynomial2([1,0,1,0,1,1])
-# print(p2.mul(p1).coeffs)
+print('\nTest 5')
+print('======')
+ip=Polynomial2([1,1,0,0,1])
+print('irreducible polynomial', ip)
+g4=GF2N(0b1101,4,ip)
+g5=GF2N(0b110,4,ip)
+print('g4 = ', g4.getPolynomial2())
+print('g5 = ', g5.getPolynomial2())
+g6=g4.mul(g5)
+print('g4 x g5 = ', g6.p)
+
+print('\nTest 6')
+print('======')
+g7=GF2N(0b1000010000100,13,None)
+g8=GF2N(0b100011011,13,None)
+print('g7 = ', g7.getPolynomial2())
+print('g8 = ', g8.getPolynomial2())
+q,r=g7.div(g8)
+print('g7/g8 =')
+print('q = ', q.getPolynomial2())
+print('r = ', r.getPolynomial2())
 #
-# print('\nTest 1')
-# print('======')
-# print('p1=x^5+x^2+x')
-# print('p2=x^3+x^2+1')
-# p1=Polynomial2([0,1,1,0,0,1])
-# p2=Polynomial2([1,0,1,1])
-# p3=p1.add(p2)
-# print('p3= p1+p2 = ', p3)
-#
-# print('\nTest 2')
-# print('======')
-# print('p4=x^7+x^4+x^3+x^2+x')
-# print('modp=x^8+x^7+x^5+x^4+1')
-# p4=Polynomial2([0,1,1,1,1,0,0,1])
-# # modp=Polynomial2([1,1,0,1,1,0,0,0,1])
-# modp=Polynomial2([1,0,0,0,1,1,0,1,1])
-# p5=p1.mul(p4,modp)
-# print('p5=p1*p4 mod (modp)=', p5)
-# #
-# print('\nTest 3')
-# print('======')
-# print('p6=x^12+x^7+x^2')
-# print('p7=x^8+x^4+x^3+x+1')
-# p6=Polynomial2([0,0,1,0,0,0,0,1,0,0,0,0,1])
-# p7=Polynomial2([1,1,0,1,1,0,0,0,1])
-# p8q,p8r=p6.div(p7)
-# print('q for p6/p7=', p8q)
-# print('r for p6/p7=', p8r)
-#
-# ####
-# print('\nTest 4')
-# print('======')
-# g1=GF2N(100)
-# g2=GF2N(5)
-# print('g1 = ', g1.getPolynomial2())
-# print('g2 = ', g2.getPolynomial2())
-# g3=g1.add(g2)
-# print('g1+g2 = ', g3)
-#
-# print('\nTest 5')
-# print('======')
-# ip=Polynomial2([1,1,0,0,1])
-# print('irreducible polynomial', ip)
-# g4=GF2N(0b1101,4,ip)
-# g5=GF2N(0b110,4,ip)
-# print('g4 = ', g4.getPolynomial2())
-# print('g5 = ', g5.getPolynomial2())
-# g6=g4.mul(g5)
-# print('g4 x g5 = ', g6.p)
-#
-# print('\nTest 6')
-# print('======')
-# g7=GF2N(0b1000010000100,13,None)
-# g8=GF2N(0b100011011,13,None)
-# print('g7 = ', g7.getPolynomial2())
-# print('g8 = ', g8.getPolynomial2())
-# q,r=g7.div(g8)
-# print('g7/g8 =')
-# print('q = ', q.getPolynomial2())
-# print('r = ', r.getPolynomial2())
-# #
 print('\nTest 7')
 print('======')
 ip=Polynomial2([1,1,0,0,1])
@@ -497,3 +403,76 @@ g11=g10.mulInv()
 print('inverse of g10 = g11 =', hex(g11.getInt()))
 g12=g11.affineMap()
 print('affine map of g11 =', hex(g12.getInt()))
+
+
+# this segment is for generation of the tables as required in the handout
+# the numbers (int) for GF(2^4) is given by 0 - 15
+add_matrix = []
+mul_matrix = []
+ip_4 = Polynomial2([1,0,0,1,1])
+
+for i in range(16):
+    current_poly_row = i
+    row_candidate = GF2N(current_poly_row, 4, ip_4)
+    add_list = []
+    for j in range(16):
+        current_poly_col = j
+        col_candidate = GF2N(current_poly_col, 4, ip_4)
+        # does the operations here - Add
+        add_list.append(col_candidate.add(row_candidate).getInt())
+    add_matrix.append(add_list)
+
+for i in range(15):
+    current_poly_row = i + 1
+    row_candidate = GF2N(current_poly_row, 4, ip_4)
+    add_list = []
+    mul_list = []
+    for j in range(15):
+        current_poly_col = j+1
+        col_candidate = GF2N(current_poly_col, 4, ip_4)
+        # does the operations here - Mul
+        mul_list.append(col_candidate.mul(row_candidate).getInt())
+    mul_matrix.append(mul_list)
+
+ip=Polynomial2([1,1,0,1,1,0,0,0,1])
+s_box_matrix = []
+for i in range(16):
+    x_row = i
+    row_list = []
+    for j in range(16):
+        y_col = j
+        int_value = int(16*x_row + y_col)
+        current_candidate = GF2N(int_value, 8, ip)
+        affined_candidate = current_candidate.affineMap()
+        row_list.append(hex(affined_candidate.getInt()))
+    s_box_matrix.append(row_list)
+
+
+
+print('\n ############ The following is submission for part 1 ############ \n ')
+
+# this segment is for printing the tables nicely lol
+print('The tables generated have no index. Please see pdf if thats needed')
+print('----- The Addition Table --------')
+
+for j in add_matrix:
+    for i in j:
+        print('{:2}'.format(str(i)), end=" ")
+    print()
+
+print('----- The Multiplication Table --------')
+for j in mul_matrix:
+    for i in j:
+        print('{:2}'.format(str(i)), end=" ")
+    print()
+
+
+print('\n ############ The following is submission for part 2 ############ \n ')
+
+print('----- The S-Box AES Table --------')
+for j in s_box_matrix:
+    for i in j:
+        print('{:4}'.format(str(i)), end=" ")
+    print()
+
+
