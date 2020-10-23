@@ -303,7 +303,8 @@ class GF2N:
     def affineMap(self):
         # first step is get array of b_primes
         rhs = [1,1,0,0,0,1,1,0]
-        b_prime = self.mulInv().getPolynomial2().coeffs #TODO: Await prof reply
+        b_prime = self.getPolynomial2().coeffs
+        # b_prime = self.mulInv().getPolynomial2().coeffs #TODO: Await prof reply
         result = []
         index = 0
         for bit_array in self.affinemat:
@@ -443,7 +444,7 @@ for i in range(16):
         y_col = j
         int_value = int(16*x_row + y_col)
         current_candidate = GF2N(int_value, 8, ip)
-        affined_candidate = current_candidate.affineMap()
+        affined_candidate = current_candidate.mulInv().affineMap()
         row_list.append(hex(affined_candidate.getInt()))
     s_box_matrix.append(row_list)
 
@@ -452,7 +453,7 @@ for i in range(16):
 print('\n ############ The following is submission for part 1 ############ \n ')
 
 # this segment is for printing the tables nicely lol
-print('The tables generated have no index. Please see pdf if thats needed')
+print('The tables generated have no index. Please see pdf if thats needed, the are in integer format')
 print('----- The Addition Table --------')
 
 for j in add_matrix:
