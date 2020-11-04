@@ -1,13 +1,13 @@
-#50.042 FCS Lab 6 template
-#Year 2019
+# Sheikh Salim 1003367
+# 50.042 FCS Lab 6 template
 
-import primes 
+import primes_template
 import random
 
 
 def dhke_setup(nb):
     # choosing a prime number
-    p = primes.gen_prime_nbits(nb)
+    p = primes_template.gen_prime_nbits(nb)
     # getting the generator
     a = random.randint(2, p-2)
     return p, a
@@ -33,16 +33,14 @@ def dhke_setup(nb):
     #                 else:
     #                     return p, current_generator
 
-
 def gen_priv_key(p):
     return random.randint(2, p-2)
 
-
 def get_pub_key(alpha, a, p):
-    return primes.square_multiply(alpha, a, p)
+    return primes_template.square_multiply(alpha, a, p)
 
 def get_shared_key(keypub,keypriv,p):
-    return primes.square_multiply(keypub, keypriv, p)
+    return primes_template.square_multiply(keypub, keypriv, p)
     
 if __name__=="__main__":
     p,alpha= dhke_setup(80)

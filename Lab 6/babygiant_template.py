@@ -1,16 +1,17 @@
-#50.042 FCS Lab 6 template
-#Year 2019
+# Sheikh Salim 1003367
+# 50.042 FCS Lab 6 template
 
-from math import sqrt, floor
-import primes
+
+from math import sqrt, ceil
+import primes_template
 
 # Mission, solve discrete log
 
 def baby_step(alpha,beta,p,fname):
-    m = floor(sqrt(p-1))
+    m = ceil(sqrt(p-1))
     with open(fname, 'w') as fptr:
         for i in range(m):
-            res = (primes.square_multiply(alpha, i, p) * beta) % p
+            res = (primes_template.square_multiply(alpha, i, p) * beta) % p
             if i == m-1:
                 fptr.write(str(res))
             else:
@@ -18,10 +19,10 @@ def baby_step(alpha,beta,p,fname):
                 fptr.write('\n')
     
 def giant_step(alpha,p,fname):
-    m = floor(sqrt(p - 1))
+    m = ceil(sqrt(p - 1))
     with open(fname, 'w') as fptr:
         for i in range(m):
-            res = primes.square_multiply(alpha, m * i, p)
+            res = primes_template.square_multiply(alpha, m * i, p)
             if i == m - 1:
                 fptr.write(str(res))
             else:
@@ -30,7 +31,7 @@ def giant_step(alpha,p,fname):
 
 def baby_giant(alpha,beta,p):
     # call each step first
-    m = floor(sqrt(p - 1))
+    m = ceil(sqrt(p - 1))
     baby_step(alpha, beta, p, 'baby.txt')
     giant_step(alpha, p, 'giant.txt')
     # open baby.txt, store in set
@@ -65,8 +66,8 @@ if __name__=="__main__":
     sharedkey=1671
     a=baby_giant(alpha,A,p)
     b=baby_giant(alpha,B,p)
-    guesskey1=primes.square_multiply(A,b,p)
-    guesskey2=primes.square_multiply(B,a,p)
+    guesskey1=primes_template.square_multiply(A,b,p)
+    guesskey2=primes_template.square_multiply(B,a,p)
     print('Guess key 1:', guesskey1)
     print('Guess key 2:', guesskey2)
     print('Actual shared key :', sharedkey)

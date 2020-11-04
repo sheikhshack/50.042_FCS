@@ -1,5 +1,5 @@
-#50.042 FCS Lab 6 template
-# Year 2019
+# Sheikh Salim 1003367
+# 50.042 FCS Lab 6 template
 
 import random
 def square_multiply(a,x,n):
@@ -64,5 +64,5 @@ if __name__=="__main__":
 
     print('Random number (100 bits):')
     print(gen_prime_nbits(100))
-    print('Random number (80 bits):')
-    print(gen_prime_nbits(80))
+    print('Random number (140 bits):')
+    print(gen_prime_nbits(140))
