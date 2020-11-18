@@ -1,4 +1,6 @@
-import RSA_part1
+# Sheikh 1003367 - Lab 7 RSA
+
+
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 from Crypto.Signature import PKCS1_PSS
@@ -10,7 +12,7 @@ def generate_RSA(bits=1024):
     key = RSA.generate(bits)
     private_key = key.exportKey('PEM')
     public_key = key.publickey().exportKey('PEM')
-    with open('friendkey.pem.priv', 'wb') as fpvt, open('friendkey.pem.pub', 'wb') as fpub:
+    with open('mykeyNew.pem.priv', 'wb') as fpvt, open('mykeyNew.pem.pub', 'wb') as fpub:
         fpvt.write(private_key)
         fpub.write(public_key)
 
@@ -64,8 +66,8 @@ def multiply_with_mod(public_key_file, ciphertext1, ciphertext2):
 if __name__=="__main__":
     # Not sure how to show with a friend, so Ill just demo the whole exchange here
     print('--------- Demo 1 - Encryption & Decryption')
-    # print('\nGenerating keys... (if doesnt exist')
-    # generate_RSA(1024)
+    print('\nGenerating keys... ')
+    generate_RSA(1024)
     with open('message.txt', 'r') as fptr:
         msg = fptr.read().encode()
 
@@ -98,7 +100,7 @@ if __name__=="__main__":
     # Step 1: we first encrypt the number 100
     integer_choice_1 = 100
     print('Encrypting: ', integer_choice_1)
-    encrypted_integer_1 = encrypt_RSA('mykey.pem.pub', convert_to_bytes(integer_choice_1))
+    encrypted_integer_1 = encrypt_RSA('mykeyNew.pem.pub', convert_to_bytes(integer_choice_1))
     print('Result of initial encryption:')
     print(encrypted_integer_1.decode())
 
@@ -106,10 +108,10 @@ if __name__=="__main__":
     multiplier_value = 2
     y_s = encrypt_RSA('mykey.pem.pub', convert_to_bytes(multiplier_value))
     print('Modified to:')
-    encrypted_integer_2 = multiply_with_mod('mykey.pem.pub', encrypted_integer_1, y_s)
+    encrypted_integer_2 = multiply_with_mod('mykeyNew.pem.pub', encrypted_integer_1, y_s)
     print(b64encode(encrypted_integer_2).decode())
     try:
-        decrypted_integer_2 = decrypt_RSA('mykey.pem.priv', encrypted_integer_2)
+        decrypted_integer_2 = decrypt_RSA('mykeyNew.pem.priv', encrypted_integer_2)
         print('Decrypted: ', decrypted_integer_2)
     except ValueError:
         print('Attack failed miserably. Decryption fails the integrity check inbuilt.')
@@ -122,10 +124,10 @@ if __name__=="__main__":
     print('Created Random Signature: ', random_signature)
 
     # Generate a new digest from the signature using pubkey
-    existential_message = b64decode(encrypt_RSA('mykey.pem.pub', random_signature))
+    existential_message = b64decode(encrypt_RSA('mykeyNew.pem.pub', random_signature))
     print('Created existential attack message: ', existential_message)
     # Attempts to verify the digital signature
-    if verify_sign('mykey.pem.pub', random_signature, existential_message):
+    if verify_sign('mykeyNew.pem.pub', random_signature, existential_message):
         print('Valid signature detected')
     else:
         print('Signature verification failed miserably')

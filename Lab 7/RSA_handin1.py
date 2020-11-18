@@ -1,3 +1,4 @@
+# Sheikh 1003367 - Lab 7 RSA
 
 import random
 from Crypto.PublicKey import RSA
@@ -47,53 +48,57 @@ if __name__=="__main__":
     #### Submission for part 1.1, simple encryption ####
 
     # Step 1 : Extract the keys
+    print('Part I-------------')
+
     pubkey, privkey = open('mykey.pem.pub','r').read(), open('mykey.pem.priv','r').read()
     rsakey_pub, rsakey_priv = RSA.importKey(pubkey), RSA.importKey(privkey)
-    #
-    # # Step 2: Encrypt using the pubkey (digital signature style)
-    # with open('message.txt', 'r') as fptr:
-    #     msg = fptr.read().encode()
-    #     fptr.close()
-    # print('Content of file read (plain):', msg)
-    # ciphertext = encrypt_message(msg, rsakey_pub.e, rsakey_pub.n)
-    # print('Encrypted message given by (in bytes):', ciphertext)
-    #
-    # # Step 3 : Decrypt the message
-    #
-    # decrypted_plaintext = decrypt_message(ciphertext, rsakey_priv.d, rsakey_priv.n)
-    # print('Decrypted message given by (in bytes) :', decrypted_plaintext)
+
+    # Step 2: Encrypt using the pubkey (digital signature style)
+    with open('message.txt', 'r') as fptr:
+        msg = fptr.read().encode()
+        fptr.close()
+    print('\nContent of file read (bytes):', msg)
+    ciphertext = encrypt_message(msg, rsakey_pub.e, rsakey_pub.n)
+    print('\nEncrypted message given by (in bytes):', ciphertext)
+
+    # Step 3 : Decrypt the message
+
+    decrypted_plaintext = decrypt_message(ciphertext, rsakey_priv.d, rsakey_priv.n)
+    print('\nDecrypted message given by (in bytes) :', decrypted_plaintext)
 
     #### Submission for part 1.2, signature ####
 
-    # # Step 1: We first hash the message
-    # with open('message.txt', 'r') as fptr:
-    #     hashed_msg = SHA256.new(fptr.read().encode())
-    #     fptr.close()
-    # print('Hashed digest given by :', hashed_msg.digest())
-    #
-    # # Step 2  - apply decryption on the hash
-    # hashed_to_bytes = hashed_msg.digest()
-    # signed_hash = decrypt_message(hashed_to_bytes, rsakey_priv.d, rsakey_priv.n)
-    #
-    # # Step 3, verify the signature
-    # verified_hash = encrypt_message(signed_hash, rsakey_pub.e, rsakey_pub.n)
-    # assert (verified_hash == hashed_to_bytes)
-    # print('Verified hash to be :', verified_hash)
+    # Step 1: We first hash the message
+    with open('message.txt', 'r') as fptr:
+        hashed_msg = SHA256.new(fptr.read().encode())
+        fptr.close()
+    print('\nHashed digest given by :', hashed_msg.digest())
+
+    # Step 2  - apply decryption on the hash
+    hashed_to_bytes = hashed_msg.digest()
+    signed_hash = decrypt_message(hashed_to_bytes, rsakey_priv.d, rsakey_priv.n)
+
+    # Step 3, verify the signature
+    verified_hash = encrypt_message(signed_hash, rsakey_pub.e, rsakey_pub.n)
+    assert (verified_hash == hashed_to_bytes)
+    print('Verified hash to be :', verified_hash)
+    print('Verification is SUCCESFUL')
 
 
     #### Submission for part 2.1, RSA Encryption Protocol Attack ####
-    print('Part II-------------')
+    print('\nPart II-------------')
+    print('---- Executing RSA Encryption Protocol Attack ----')
     # Step 1: we first encrypt the number 100
     integer_choice_1 = 100
     print('Encrypting: ', integer_choice_1 )
     encrypted_integer_1 = encrypt_message(integer_choice_1, rsakey_pub.e, rsakey_pub.n, integer_mode=True)
-    print('\nResult:')
+    print('Result:')
     print(b64encode(encrypted_integer_1).decode())
 
     # Step 2: To achieve encrypted value for number 200, we multiply the integer value of encrypted text
-    multipier_value = 2
-    y_s = encrypt_message(multipier_value, rsakey_pub.e, rsakey_pub.n, integer_mode=True)
-    print('\nModified to:')
+    multiplier_value = 2
+    y_s = encrypt_message(multiplier_value, rsakey_pub.e, rsakey_pub.n, integer_mode=True)
+    print('Modified to:')
     # TODO: Do we remove modn?
     encrypted_integer_2 = (int.from_bytes(encrypted_integer_1, byteorder='big') * int.from_bytes(y_s, byteorder='big')) % rsakey_pub.n
     print(b64encode(convert_to_bytes(encrypted_integer_2)).decode())
@@ -101,6 +106,7 @@ if __name__=="__main__":
     print('\nDecrypted: ', int.from_bytes(decrypted_integer_2, byteorder='big'))
 
     #### Submission for part 2.2, RSA Digital Signature Protocol Attack ####
+    print('---- Executing RSA Digital Signature Attack ----')
 
     # Generate a random signature S
     random_signature = 'garbagestuff'.encode()
