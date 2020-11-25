@@ -49,10 +49,10 @@ def verify_sign(public_key_file,sign,data):
 
 # Helper function for attack
 def convert_to_bytes(integer_val):
-    return integer_val.to_bytes((integer_val.bit_length() + 7) // 8, byteorder='big')
+    return integer_val.to_bytes((integer_val.bit_length() + 7) // 8, byteorder='little')
 
 def convert_to_int(b64bytes):
-    return int.from_bytes(b64decode(b64bytes), byteorder='big')
+    return int.from_bytes(b64decode(b64bytes), byteorder='little')
 
 def multiply_with_mod(public_key_file, ciphertext1, ciphertext2):
     # Both ciphers are currently in base64 format

@@ -18,30 +18,26 @@ def square_multiply(a,x,n):
 
 def encrypt_message(msg, e, n, integer_mode=False):
     if not integer_mode:
-        msg_int = int.from_bytes(msg, byteorder='big')
+        msg_int = int.from_bytes(msg, byteorder='little')
     else:
         msg_int = msg
     ciphertext = square_multiply(msg_int, e, n)
-    res = ciphertext.to_bytes((ciphertext.bit_length() + 7) // 8, byteorder='big')
-    with open('encrypted_msg.txt', 'wb') as fwrite:
-        fwrite.write(res)
+    res = ciphertext.to_bytes((ciphertext.bit_length() + 7) // 8, byteorder='little')
+    # with open('encrypted_msg.txt', 'wb') as fwrite:
+    #     fwrite.write(res)
     return res  # returns the byte array
 
 def decrypt_message(ciphertext, d, n, integer_mode=False):
     if not integer_mode:
-        cipher_int = int.from_bytes(ciphertext, byteorder='big')
+        cipher_int = int.from_bytes(ciphertext, byteorder='little')
     else:
         cipher_int = ciphertext
     plaintext = square_multiply(cipher_int, d, n)
-    res = plaintext.to_bytes((plaintext.bit_length() + 7) // 8, byteorder='big')
-
-    with open('decrypted_msg.txt', 'wb') as fwrite:
-        fwrite.write(res)
-
+    res = plaintext.to_bytes((plaintext.bit_length() + 7) // 8, byteorder='little')
     return res
 
 def convert_to_bytes(integer_val):
-    return integer_val.to_bytes((integer_val.bit_length() + 7) // 8, byteorder='big')
+    return integer_val.to_bytes((integer_val.bit_length() + 7) // 8, byteorder='little')
 
 
 if __name__=="__main__":
@@ -99,11 +95,11 @@ if __name__=="__main__":
     multiplier_value = 2
     y_s = encrypt_message(multiplier_value, rsakey_pub.e, rsakey_pub.n, integer_mode=True)
     print('Modified to:')
-    # TODO: Do we remove modn?
-    encrypted_integer_2 = (int.from_bytes(encrypted_integer_1, byteorder='big') * int.from_bytes(y_s, byteorder='big')) % rsakey_pub.n
+    # TODO: Do we remove modn? Either way is fine lol
+    encrypted_integer_2 = (int.from_bytes(encrypted_integer_1, byteorder='little') * ((int.from_bytes(y_s, byteorder='little') ) % rsakey_pub.n))
     print(b64encode(convert_to_bytes(encrypted_integer_2)).decode())
     decrypted_integer_2 = decrypt_message(encrypted_integer_2, rsakey_priv.d, rsakey_priv.n, integer_mode=True)
-    print('\nDecrypted: ', int.from_bytes(decrypted_integer_2, byteorder='big'))
+    print('\nDecrypted: ', int.from_bytes(decrypted_integer_2, byteorder='little'))
 
     #### Submission for part 2.2, RSA Digital Signature Protocol Attack ####
     print('---- Executing RSA Digital Signature Attack ----')

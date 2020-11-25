@@ -6,7 +6,6 @@
 3. Otherfiles
     - `friendkey.pem.pub` -> friend's pubkey
     - `friend.sign` -> friend's digital signature
-    - will also generate `encrypted_msg` and `decrypted_msg` for Hand In 1, ouitput will be printed in terminal as well :)
 
 
 ## Part 1 & 2 Writeup
